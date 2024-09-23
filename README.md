@@ -417,3 +417,25 @@ while true do
         game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Inventory"):FireServer(unpack(args))
     end
 end
+local hitboxMagnitude = 500 -- ระยะการตีที่ต้องการ
+
+-- ฟังก์ชันในการขยายระยะการตี
+local function setHitboxMagnitude(player)
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local humanoidRootPart = player.Character.HumanoidRootPart
+        local originalSize = humanoidRootPart.Size
+        humanoidRootPart.Size = Vector3.new(hitboxMagnitude, originalSize.Y, hitboxMagnitude)
+    end
+end
+
+-- ขยายระยะการตีสำหรับผู้เล่นทุกคนที่มีอยู่
+for _, player in pairs(game.Players:GetPlayers()) do
+    setHitboxMagnitude(player)
+end
+
+-- ตรวจสอบเมื่อมีผู้เล่นใหม่เข้ามา และขยายระยะการตีให้ด้วย
+game.Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function()
+        setHitboxMagnitude(player)
+    end)
+end)
