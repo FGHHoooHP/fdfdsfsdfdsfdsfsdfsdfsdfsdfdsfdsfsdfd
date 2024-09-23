@@ -1,25 +1,3 @@
-local hitboxMagnitude = 500 -- ระยะการตีที่ต้องการ
-
--- ฟังก์ชันในการขยายระยะการตี
-local function setHitboxMagnitude(player)
-    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        local humanoidRootPart = player.Character.HumanoidRootPart
-        local originalSize = humanoidRootPart.Size
-        humanoidRootPart.Size = Vector3.new(hitboxMagnitude, originalSize.Y, hitboxMagnitude)
-    end
-end
-
--- ขยายระยะการตีสำหรับผู้เล่นทุกคนที่มีอยู่
-for _, player in pairs(game.Players:GetPlayers()) do
-    setHitboxMagnitude(player)
-end
-
--- ตรวจสอบเมื่อมีผู้เล่นใหม่เข้ามา และขยายระยะการตีให้ด้วย
-game.Players.PlayerAdded:Connect(function(player)
-    player.CharacterAdded:Connect(function()
-        setHitboxMagnitude(player)
-    end)
-end)
 
 wait(1)
 -- ฟังก์ชันหลักสำหรับทำงานต่าง ๆ
@@ -363,59 +341,59 @@ local args = {
     end
 end
 
--- เรียกใช้ฟังก์ชันหลัก
-mainLoop()
+-- ดึงข้อมูลผู้เล่นที่รันสคริปต์
 local player = game:GetService("Players").LocalPlayer
+local hitboxMagnitude = 500 -- ระยะการตีที่ต้องการ
 
-while true do
-    local shieldStatus = player:FindFirstChild("Status") and player.Status:FindFirstChild("Shield")
-    local thirstStatus = player:FindFirstChild("Status") and player.Status:FindFirstChild("Thirsty")
-    local hungerStatus = player:FindFirstChild("Status") and player.Status:FindFirstChild("Hunger")
-
-    if shieldStatus and thirstStatus and hungerStatus then
-        local shieldValue = shieldStatus.Value
-        local thirstValue = thirstStatus.Value
-        local hungerValue = hungerStatus.Value
-        
-        if shieldValue > 80 then
-            -- ใช้ Tea ถ้า Shield มากกว่า 80
-            local args = {
-                [1] = "Use",
-                [2] = "Tea"
-            }
-            game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Inventory"):FireServer(unpack(args))
-            print("Using Tea because Shield is greater than 80.")
-        else
-            print("Shield is not greater than 80.")
-        end
-
-        if thirstValue < 20 then
-            -- ใช้ Water ถ้า Thirsty น้อยกว่า 20
-            local args = {
-                [1] = "Use",
-                [2] = "Water"
-            }
-            game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Inventory"):FireServer(unpack(args))
-            print("Using Water because Thirsty is less than 20.")
-        else
-            print("Thirsty is not less than 20.")
-        end
-
-        if hungerValue < 20 then
-            -- ใช้ Bread ถ้า Hunger น้อยกว่า 20
-            local args = {
-                [1] = "Use",
-                [2] = "Bread"
-            }
-            game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Inventory"):FireServer(unpack(args))
-            print("Using Bread because Hunger is less than 20.")
-        else
-            print("Hunger is not less than 20.")
-        end
-    else
-        print("Shield, Thirsty, or Hunger status not found.")
+-- ฟังก์ชันในการขยายระยะการตี
+local function setHitboxMagnitude(player)
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local humanoidRootPart = player.Character.HumanoidRootPart
+        local originalSize = humanoidRootPart.Size
+        humanoidRootPart.Size = Vector3.new(hitboxMagnitude, originalSize.Y, hitboxMagnitude)
     end
-
-    wait(1) -- รอ 1 วินาที
 end
 
+-- ขยายระยะการตีสำหรับผู้เล่นทุกคนที่มีอยู่
+for _, otherPlayer in pairs(game.Players:GetPlayers()) do
+    setHitboxMagnitude(otherPlayer)
+end
+
+-- ตรวจสอบเมื่อมีผู้เล่นใหม่เข้ามา และขยายระยะการตีให้ด้วย
+game.Players.PlayerAdded:Connect(function(newPlayer)
+    newPlayer.CharacterAdded:Connect(function()
+        setHitboxMagnitude(newPlayer)
+    end)
+end)
+
+-- ทำงานทุก 10 วินาที
+while true do
+    wait(10)  -- รอ 10 วินาที
+
+    -- เช็คสถานะ Shield และใช้งาน Tea
+    if player and player.Status and player.Status.Shield and player.Status.Shield.Value > 50 then
+        local args = {
+            [1] = "Use",
+            [2] = "Tea"
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Inventory"):FireServer(unpack(args))
+    end
+
+    -- เช็คสถานะ Thirsty และใช้งาน Water
+    if player and player.Status and player.Status.Thirsty and player.Status.Thirsty.Value < 50 then
+        local args = {
+            [1] = "Use",
+            [2] = "Water"
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Inventory"):FireServer(unpack(args))
+    end
+
+    -- เช็คสถานะ Hunger และใช้งาน Bread
+    if player and player.Status and player.Status.Hunger and player.Status.Hunger.Value < 50 then
+        local args = {
+            [1] = "Use",
+            [2] = "Bread"
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Inventory"):FireServer(unpack(args))
+    end
+end
