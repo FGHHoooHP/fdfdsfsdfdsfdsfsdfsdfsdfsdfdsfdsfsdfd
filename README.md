@@ -1,441 +1,233 @@
-local hitboxMagnitude = 500 -- ระยะการตีที่ต้องการ
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
+local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
--- ฟังก์ชันในการขยายระยะการตี
-local function setHitboxMagnitude(player)
-    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        local humanoidRootPart = player.Character.HumanoidRootPart
-        local originalSize = humanoidRootPart.Size
-        humanoidRootPart.Size = Vector3.new(hitboxMagnitude, originalSize.Y, hitboxMagnitude)
+local Window = Fluent:CreateWindow({
+    Title = "Fluent " .. Fluent.Version,
+    SubTitle = "by dawid",
+    TabWidth = 160,
+    Size = UDim2.fromOffset(580, 460),
+    Acrylic = true, -- The blur may be detectable, setting this to false disables blur entirely
+    Theme = "Dark",
+    MinimizeKey = Enum.KeyCode.LeftControl -- Used when theres no MinimizeKeybind
+})
+
+--Fluent provides Lucide Icons https://lucide.dev/icons/ for the tabs, icons are optional
+local Tabs = {
+    Main = Window:AddTab({ Title = "Main", Icon = "" }),
+    Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
+}
+
+local Options = Fluent.Options
+
+do
+    Fluent:Notify({
+        Title = "Water hub",
+        Content = "open Water hub",
+        SubContent = "Water hub", -- Optional
+        Duration = 5 -- Set to nil to make the notification not disappear
+    })
+
+local Toggle = Tabs.Main:AddToggle("MyToggle", {Title = "Toggle", Default = false })
+
+local player = game:GetService("Players")["18y_033"]
+local targetPosition = Vector3.new(2898, 40, -843)
+local checkInventoryConnection -- ตัวแปรเพื่อเก็บการเชื่อมต่อ
+
+-- ฟังก์ชันสำหรับการเช็ค Inventory
+local function checkInventory()
+    -- เช็คว่า Inventory มี Stone หรือไม่
+    if player.Inventory:FindFirstChild("Stone") then
+        local stoneCount = player.Inventory.Stone.Value
+
+        -- ถ้ามี Stone 60 หน่วย
+        if stoneCount >= 60 then
+            -- วาร์ปไปยังตำแหน่งที่ต้องการ
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(targetPosition)
+        end
     end
 end
 
--- ขยายระยะการตีสำหรับผู้เล่นทุกคนที่มีอยู่
-for _, player in pairs(game.Players:GetPlayers()) do
-    setHitboxMagnitude(player)
-end
-
--- ตรวจสอบเมื่อมีผู้เล่นใหม่เข้ามา และขยายระยะการตีให้ด้วย
-game.Players.PlayerAdded:Connect(function(player)
-    player.CharacterAdded:Connect(function()
-        setHitboxMagnitude(player)
-    end)
+Toggle:OnChanged(function(isEnabled)
+    if isEnabled then
+        -- เริ่มต้นการตรวจสอบทุกๆ 5 วินาที
+        checkInventoryConnection = game:GetService("RunService").Heartbeat:Connect(function()
+            checkInventory()
+            wait(5) -- รอ 5 วินาทีก่อนทำซ้ำ
+        end)
+    else
+        -- หยุดการตรวจสอบเมื่อ Toggle ถูกปิด
+        if checkInventoryConnection then
+            checkInventoryConnection:Disconnect()
+            checkInventoryConnection = nil
+        end
+    end
 end)
--- ฟังก์ชันหลักสำหรับทำงานต่าง ๆ
-local function mainLoop()
-    while true do
-        local args = {
-            [1] = "Support Gacha",
-            [2] = 20
-        }
 
-        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Gacha"):InvokeServer(unpack(args))
-        wait(0.5)
 
-        args = {
-            [1] = "GachaCar250kg.",
-            [2] = 20
-        }
+local Toggle = Tabs.Main:AddToggle("MyToggle", {Title = "check stone v2", Default = false })
 
-        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Gacha"):InvokeServer(unpack(args))
-        wait(0.5)
+-- ตัวแปรสำหรับเช็คว่าวาบไปแล้วหรือยัง
+local hasTeleported = false 
+local running = false -- ตัวแปรสำหรับควบคุมการทำงานของลูป
 
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+Toggle:OnChanged(function(state)
+    if state then
+        running = true -- เริ่มทำงานเมื่อ Toggle ถูกเปิด
+        while running do
+            local player = game:GetService("Players").LocalPlayer
+            
+            if player then
+                local stoneCount = player.Inventory:FindFirstChild("Stone") and player.Inventory.Stone.Value or 0
 
-        humanoidRootPart.CFrame = CFrame.new(-1658, 42, 2338)
-        wait(1.5)
-
-        args = {
-            [1] = "10000",
-            [2] = "Withdraw"
-        }
-
-        game:GetService("ReplicatedStorage"):WaitForChild("BankingRemotes"):WaitForChild("MainRemote"):FireServer(unpack(args))
-
-        wait(1.5)
-        humanoidRootPart.CFrame = CFrame.new(-3184, 34, 3234)
-        wait(1.5)
-        local args = {
-    [1] = "Tea",
-    [2] = 10
-}
-
-game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Shop"):FireServer(unpack(args))
-local args = {
-    [1] = "Water",
-    [2] = 10
-}
-
-game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Shop"):FireServer(unpack(args))
-local args = {
-    [1] = "Bread",
-    [2] = 10
-}
-
-game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Shop"):FireServer(unpack(args))
-        local args = {
-    [1] = "Pickaxe",
-    [2] = 1
-}
-
-game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Shop"):FireServer(unpack(args))
-local args = {
-    [1] = "Sickle",
-    [2] = 1
-}
-
-game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Shop"):FireServer(unpack(args))
-local args = {
-    [1] = "Axe",
-    [2] = 1
-}
-
-game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Shop"):FireServer(unpack(args))
-local args = {
-    [1] = "Jackhammer",
-    [2] = 1
-}
-
-game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Shop"):FireServer(unpack(args))
-local args = {
-    [1] = "Cleaver",
-    [2] = 1
-}
-
-game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Shop"):FireServer(unpack(args))
-local args = {
-            [1] = "Basket",
-            [2] = 1
-        }
-        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Shop"):FireServer(unpack(args))
-
-        humanoidRootPart.CFrame = CFrame.new(4855, 34, 897)
-        wait(0.5)
-
-        -- เริ่มรอบใหม่หลังจากทำงานเสร็จ
-        wait(1)
-
-        -- ฟังก์ชันสำหรับดึงจำนวนของไอเท็มที่ระบุ
-        local function getItemAmount(itemName)
-            local item = player.Inventory:FindFirstChild(itemName)
-            return item and item.Value or 0
-        end
-
-        -- ตัวแปรที่ใช้ตรวจสอบว่าได้ทำการเทเลพอร์ตแล้วหรือยัง
-        local teleportedItems = {
-            noTeleported = false,
-            aTeleported = false,
-            noETeleported = false,
-            ABCD = false,
-            ABCDF = false,
-            ABCDFGH = false,
-            ABCDFG = false,
-            ABCDFGO = false,
-            ABCDFGOP = false
-        }
-
-        -- ตารางข้อมูลสำหรับไอเท็มและพิกัดการเทเลพอร์ต
-        local teleportLocations = {
-            {name = "Cabbage", amount = 60, cframe = CFrame.new(-2960, 33, 92), flag = "noTeleported"},
-            {name = "Banana", amount = 50, cframe = CFrame.new(3426, 33, -227), flag = "aTeleported"},
-            {name = "Strawberry", amount = 60, cframe = CFrame.new(3409, 35, 2087), flag = "noETeleported"},
-            {name = "Apple", amount = 60, cframe = CFrame.new(2379, 37, 3164), flag = "ABCD"},
-            {name = "Orange", amount = 60, cframe = CFrame.new(4174, 34, 3484), flag = "ABCDF"},
-            {name = "Meat", amount = 60, cframe = CFrame.new(-4784, 33, 1391), flag = "ABCDFGH"},
-            {name = "Wood", amount = 60, cframe = CFrame.new(2061, 21, -406), flag = "ABCDFG"},
-            {name = "Rice", amount = 60, cframe = CFrame.new(-2533, 13, 5159), flag = "ABCDFGO"},
-            {name = "Oil", amount = 60, cframe = CFrame.new(857, 35, 3338), flag = "ABCDFGOP"}
-        }
-
-        -- ฟังก์ชันสำหรับขายไอเท็ม
-        local function sellItem(itemName, amount)
-            local args = {itemName, tostring(amount)}
-            game:GetService("ReplicatedStorage"):WaitForChild("WorldMarket_Remotes"):WaitForChild("RemoteEvent"):FireServer(unpack(args))
-        end
-
-        -- ลูปหลัก
-        while true do
-            for _, teleportData in ipairs(teleportLocations) do
-                local itemAmount = getItemAmount(teleportData.name)
-                if itemAmount >= teleportData.amount and not teleportedItems[teleportData.flag] then
-                    humanoidRootPart.CFrame = teleportData.cframe -- เทเลพอร์ตไปที่พิกัดที่ระบุ
-                    teleportedItems[teleportData.flag] = true -- อัปเดตสถานะการเทเลพอร์ต
+                if stoneCount == 0 and not hasTeleported then
+                    -- วาบไปที่ตำแหน่ง -4539, 38, -227
+                    player.Character.HumanoidRootPart.CFrame = CFrame.new(-4539, 38, -227)
+                    hasTeleported = true -- ตั้งค่าตัวแปรว่าได้วาบไปแล้ว
+                elseif stoneCount > 0 then
+                    hasTeleported = false -- ถ้ามี Stone ให้ตั้งค่าตัวแปรกลับ
                 end
-                wait(0.5)
             end
-
-            -- ตรวจสอบว่าได้เทเลพอร์ตไปพิกัดสุดท้ายแล้วหรือไม่
-            if teleportedItems["ABCDFGOP"] then
-                -- รันคำสั่งขายไอเท็ม
-                sellItem("Watermelon", 60)
-                sellItem("Apple", 60)
-                sellItem("Strawberry", 60)
-                sellItem("Orange", 60)
-                sellItem("Wood", 60)
-                sellItem("Banana", 50)
-                sellItem("Meat", 60)
-                sellItem("Cabbage", 60)
-                sellItem("Rice", 60)
-                sellItem("Oil", 60)
-                break -- ออกจากลูปเมื่อทุกเงื่อนไขถูกต้อง
-            end
-
-            wait(1) -- ดีเลย์เล็กน้อยเพื่อป้องกันการใช้ CPU สูงเกินไป
+            
+            wait(0.5) -- ตรวจสอบทุก 0.5 วินาที
         end
+    else
+        running = false -- หยุดลูปเมื่อ Toggle ถูกปิด
     end
-end
-
--- เรียกใช้ฟังก์ชันหลัก
-mainLoop()
-local hitboxMagnitude = 500 -- ระยะการตีที่ต้องการ
-
--- ฟังก์ชันในการขยายระยะการตี
-local function setHitboxMagnitude(player)
-    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        local humanoidRootPart = player.Character.HumanoidRootPart
-        local originalSize = humanoidRootPart.Size
-        humanoidRootPart.Size = Vector3.new(hitboxMagnitude, originalSize.Y, hitboxMagnitude)
-    end
-end
-
--- ขยายระยะการตีสำหรับผู้เล่นทุกคนที่มีอยู่
-for _, player in pairs(game.Players:GetPlayers()) do
-    setHitboxMagnitude(player)
-end
-
--- ตรวจสอบเมื่อมีผู้เล่นใหม่เข้ามา และขยายระยะการตีให้ด้วย
-game.Players.PlayerAdded:Connect(function(player)
-    player.CharacterAdded:Connect(function()
-        setHitboxMagnitude(player)
-    end)
 end)
+local Toggle = Tabs.Main:AddToggle("MyToggle", {Title = "Auto E", Default = false })
 
-wait(1)
--- ฟังก์ชันหลักสำหรับทำงานต่าง ๆ
-local function mainLoop()
-    while true do
-        local args = {
-            [1] = "Support Gacha",
-            [2] = 20
-        }
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local isRunning = false -- ตัวแปรเพื่อบันทึกสถานะการทำงาน
 
-        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Gacha"):InvokeServer(unpack(args))
-        wait(0.5)
-
-        args = {
-            [1] = "GachaCar250kg.",
-            [2] = 20
-        }
-
-        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Gacha"):InvokeServer(unpack(args))
-        wait(0.5)
-
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-
-        humanoidRootPart.CFrame = CFrame.new(-1658, 42, 2338)
-        wait(1.5)
-
-        args = {
-            [1] = "10000",
-            [2] = "Withdraw"
-        }
-
-        game:GetService("ReplicatedStorage"):WaitForChild("BankingRemotes"):WaitForChild("MainRemote"):FireServer(unpack(args))
-
-        wait(1.5)
-        humanoidRootPart.CFrame = CFrame.new(-3184, 34, 3234)
-        wait(1.5)
-
-        local args = {
-    [1] = "Pickaxe",
-    [2] = 1
-}
-
-game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Shop"):FireServer(unpack(args))
-local args = {
-    [1] = "Sickle",
-    [2] = 1
-}
-
-game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Shop"):FireServer(unpack(args))
-local args = {
-    [1] = "Axe",
-    [2] = 1
-}
-
-game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Shop"):FireServer(unpack(args))
-local args = {
-    [1] = "Jackhammer",
-    [2] = 1
-}
-
-game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Shop"):FireServer(unpack(args))
-local args = {
-    [1] = "Cleaver",
-    [2] = 1
-}
-
-game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Shop"):FireServer(unpack(args))
-local args = {
-            [1] = "Basket",
-            [2] = 1
-        }
-        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Shop"):FireServer(unpack(args))
-
-        humanoidRootPart.CFrame = CFrame.new(4855, 34, 897)
-        wait(0.5)
-
-        -- เริ่มรอบใหม่หลังจากทำงานเสร็จ
-        wait(1)
-
-        -- ฟังก์ชันสำหรับดึงจำนวนของไอเท็มที่ระบุ
-        local function getItemAmount(itemName)
-            local item = player.Inventory:FindFirstChild(itemName)
-            return item and item.Value or 0
+Toggle:OnChanged(function(state)
+    if state then
+        isRunning = true
+        while isRunning do
+            -- จำลองการกดปุ่ม E
+            VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.E, false, game)
+            wait(5) -- หน่วงเวลาสั้นๆ ก่อนปล่อยปุ่ม E
+            -- จำลองการปล่อยปุ่ม E
+            VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+            wait(5) -- รอ 5 วินาทีก่อนทำซ้ำ
         end
+    else
+        isRunning = false -- หยุดการทำงานเมื่อ Toggle ปิด
+    end
+end)
+end
+local Toggle = Tabs.Main:AddToggle("MyToggle", { Title = "eat", Default = false })
 
-        -- ตัวแปรที่ใช้ตรวจสอบว่าได้ทำการเทเลพอร์ตแล้วหรือยัง
-        local teleportedItems = {
-            noTeleported = false,
-            aTeleported = false,
-            noETeleported = false,
-            ABCD = false,
-            ABCDF = false,
-            ABCDFGH = false,
-            ABCDFG = false,
-            ABCDFGO = false,
-            ABCDFGOP = false
-        }
-
-        -- ตารางข้อมูลสำหรับไอเท็มและพิกัดการเทเลพอร์ต
-        local teleportLocations = {
-            {name = "Cabbage", amount = 60, cframe = CFrame.new(-2960, 33, 92), flag = "noTeleported"},
-            {name = "Banana", amount = 50, cframe = CFrame.new(3426, 33, -227), flag = "aTeleported"},
-            {name = "Strawberry", amount = 60, cframe = CFrame.new(3409, 35, 2087), flag = "noETeleported"},
-            {name = "Apple", amount = 60, cframe = CFrame.new(2379, 37, 3164), flag = "ABCD"},
-            {name = "Orange", amount = 60, cframe = CFrame.new(4174, 34, 3484), flag = "ABCDF"},
-            {name = "Meat", amount = 60, cframe = CFrame.new(-4784, 33, 1391), flag = "ABCDFGH"},
-            {name = "Wood", amount = 60, cframe = CFrame.new(2061, 21, -406), flag = "ABCDFG"},
-            {name = "Rice", amount = 60, cframe = CFrame.new(-2533, 13, 5159), flag = "ABCDFGO"},
-            {name = "Oil", amount = 60, cframe = CFrame.new(857, 35, 3338), flag = "ABCDFGOP"}
-        }
-
-        -- ฟังก์ชันสำหรับขายไอเท็ม
-        local function sellItem(itemName, amount)
-            local args = {itemName, tostring(amount)}
-            game:GetService("ReplicatedStorage"):WaitForChild("WorldMarket_Remotes"):WaitForChild("RemoteEvent"):FireServer(unpack(args))
-        end
-
-        -- ลูปหลัก
+Toggle:OnChanged(function()
+    -- เช็คสถานะของ Toggle
+    if Toggle.Value then
         while true do
-            for _, teleportData in ipairs(teleportLocations) do
-                local itemAmount = getItemAmount(teleportData.name)
-                if itemAmount >= teleportData.amount and not teleportedItems[teleportData.flag] then
-                    humanoidRootPart.CFrame = teleportData.cframe -- เทเลพอร์ตไปที่พิกัดที่ระบุ
-                    teleportedItems[teleportData.flag] = true -- อัปเดตสถานะการเทเลพอร์ต
-                end
-                wait(0.5)
+            local player = game.Players.LocalPlayer
+            local character = player.Character or player.CharacterAdded:Wait()
+            local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+            -- วาบไปยังตำแหน่งที่กำหนด
+            humanoidRootPart.CFrame = CFrame.new(-3182, 34, 3242)
+
+            -- ฟังก์ชันซื้อสินค้า
+            local function buy(item, quantity)
+                local args = { [1] = item, [2] = quantity }
+                game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Shop"):FireServer(unpack(args))
             end
 
-            -- ตรวจสอบว่าได้เทเลพอร์ตไปพิกัดสุดท้ายแล้วหรือไม่
-            if teleportedItems["ABCDFGOP"] then
-                -- รันคำสั่งขายไอเท็ม
-                sellItem("Watermelon", 60)
-                sellItem("Apple", 60)
-                sellItem("Strawberry", 60)
-                sellItem("Orange", 60)
-                sellItem("Wood", 60)
-                sellItem("Banana", 50)
-                sellItem("Meat", 60)
-                sellItem("Cabbage", 60)
-                sellItem("Rice", 60)
-                sellItem("Oil", 60)
-                break -- ออกจากลูปเมื่อทุกเงื่อนไขถูกต้อง
-            end
+            -- ซื้อสินค้า
+            buy("Tea", 10)
+            buy("Water", 10)
+            buy("Bread", 10)
 
-            wait(1) -- ดีเลย์เล็กน้อยเพื่อป้องกันการใช้ CPU สูงเกินไป
+            -- รอ 1 วินาที
+            wait(1)
+
+            -- วาบไปยังพิกัดใหม่
+            humanoidRootPart.CFrame = CFrame.new(-4539, 38, -227)
+
+            -- รอ 500 วินาที
+            wait(250)
         end
     end
-end
-
--- ดึงข้อมูลผู้เล่นที่รันสคริปต์
-local player = game:GetService("Players").LocalPlayer
-local hitboxMagnitude = 500 -- ระยะการตีที่ต้องการ
-
--- ฟังก์ชันในการขยายระยะการตี
-local function setHitboxMagnitude(player)
-    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        local humanoidRootPart = player.Character.HumanoidRootPart
-        local originalSize = humanoidRootPart.Size
-        humanoidRootPart.Size = Vector3.new(hitboxMagnitude, originalSize.Y, hitboxMagnitude)
-    end
-end
-
--- ขยายระยะการตีสำหรับผู้เล่นทุกคนที่มีอยู่
-for _, otherPlayer in pairs(game.Players:GetPlayers()) do
-    setHitboxMagnitude(otherPlayer)
-end
-
--- ตรวจสอบเมื่อมีผู้เล่นใหม่เข้ามา และขยายระยะการตีให้ด้วย
-game.Players.PlayerAdded:Connect(function(newPlayer)
-    newPlayer.CharacterAdded:Connect(function()
-        setHitboxMagnitude(newPlayer)
-    end)
 end)
 
--- ทำงานทุก 10 วินาที
-while true do
-    wait(10)  -- รอ 10 วินาที
+local Toggle = Tabs.Main:AddToggle("MyToggle", {Title = "Toggle", Default = false })
 
-    -- เช็คสถานะ Shield และใช้งาน Tea
-    if player and player.Status and player.Status.Shield and player.Status.Shield.Value > 50 then
-        local args = {
-            [1] = "Use",
-            [2] = "Tea"
-        }
-        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Inventory"):FireServer(unpack(args))
-    end
+Toggle:OnChanged(function(state)
+    -- ถ้าเปิดการทำงาน Toggle
+    while state do
+        -- รายการไอเท็มที่ต้องการรับ
+        local items = {"Water", "Tea", "Water", "Bread"}
 
-    -- เช็คสถานะ Thirsty และใช้งาน Water
-    if player and player.Status and player.Status.Thirsty and player.Status.Thirsty.Value < 50 then
-        local args = {
-            [1] = "Use",
-            [2] = "Water"
-        }
-        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Inventory"):FireServer(unpack(args))
-    end
+        -- ลูปเพื่อส่งคำสั่งรับไอเท็มแต่ละชนิด
+        for _, item in pairs(items) do
+            local args = {
+                [1] = "Get",
+                [2] = item,
+                [3] = 10
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Vault"):FireServer(unpack(args))
+        end
 
-    -- เช็คสถานะ Hunger และใช้งาน Bread
-    if player and player.Status and player.Status.Hunger and player.Status.Hunger.Value < 50 then
-        local args = {
-            [1] = "Use",
-            [2] = "Bread"
-        }
-        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Inventory"):FireServer(unpack(args))
+        -- รอ 500 วินาทีก่อนรันอีกครั้ง
+        wait(500)
     end
+end)
+local Toggle = Tabs.Main:AddToggle("MyToggle", {Title = "Toggle", Default = false})
+
+local running = false  -- ตัวแปรสำหรับตรวจสอบสถานะการทำงาน
+
+Toggle:OnChanged(function(state)
+    if state then
+        running = true
+        while running do
+            local materials = {
+                {name = "Vibranium", amount = 10},
+                {name = "Diamond", amount = 10},
+                {name = "Gold", amount = 10},
+                {name = "Steel", amount = 10}  -- เพิ่ม Steel ที่นี่
+            }
+
+            for _, material in ipairs(materials) do
+                local args = {
+                    [1] = "Store",
+                    [2] = material.name,
+                    [3] = material.amount
+                }
+
+                game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Vault"):FireServer(unpack(args))
+                wait(10)  -- รอ 10 วินาทีก่อนจะเก็บวัสดุถัดไป
+            end
+        end
+    else
+        running = false  -- เมื่อปิด Toggle จะหยุดการทำงาน
+    end
+end)
+local Toggle = Tabs.Main:AddToggle("MyToggle", {Title = "Toggle", Default = false })
+local selling = false  -- ตัวแปรเพื่อตรวจสอบสถานะของ Toggle
+
+local itemsToSell = {"Diamond", "Gold", "Vibranium", "Steel"}
+
+local function sellItem(itemName)
+    local args = {
+        [1] = "Sell",
+        [2] = itemName,
+        [3] = "1"
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Economy"):FireServer(unpack(args))
 end
-local hitboxMagnitude = 500 -- ระยะการตีที่ต้องการ
 
--- ฟังก์ชันในการขยายระยะการตี
-local function setHitboxMagnitude(player)
-    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        local humanoidRootPart = player.Character.HumanoidRootPart
-        local originalSize = humanoidRootPart.Size
-        humanoidRootPart.Size = Vector3.new(hitboxMagnitude, originalSize.Y, hitboxMagnitude)
+Toggle:OnChanged(function(state)
+    selling = state  -- อัปเดตสถานะ selling ตาม Toggle
+    if selling then
+        coroutine.wrap(function()
+            while selling do
+                for _, item in ipairs(itemsToSell) do
+                    sellItem(item)
+                end
+                wait(5)
+            end
+        end)()  -- เริ่ม coroutine เพื่อรันการขายในแบ็คกราวด์
     end
-end
-
--- ขยายระยะการตีสำหรับผู้เล่นทุกคนที่มีอยู่
-for _, player in pairs(game.Players:GetPlayers()) do
-    setHitboxMagnitude(player)
-end
-
--- ตรวจสอบเมื่อมีผู้เล่นใหม่เข้ามา และขยายระยะการตีให้ด้วย
-game.Players.PlayerAdded:Connect(function(player)
-    player.CharacterAdded:Connect(function()
-        setHitboxMagnitude(player)
-    end)
 end)
