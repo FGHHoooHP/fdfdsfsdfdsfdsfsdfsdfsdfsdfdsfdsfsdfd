@@ -30,7 +30,7 @@ do
 
 local Toggle = Tabs.Main:AddToggle("MyToggle", {Title = "Toggle", Default = false })
 
-local player = game:GetService("Players")["18y_033"]
+local player = game:GetService("Players")["povertylive916"]
 local targetPosition = Vector3.new(2898, 40, -843)
 local checkInventoryConnection -- ตัวแปรเพื่อเก็บการเชื่อมต่อ
 
