@@ -30,7 +30,7 @@ do
 
 local Toggle = Tabs.Main:AddToggle("MyToggle", {Title = "Toggle", Default = false })
 
-local player = game:GetService("Players")["18y_033"]
+local player = game:GetService("Players")["povertylive916"]
 local targetPosition = Vector3.new(2898, 40, -843)
 local checkInventoryConnection -- ตัวแปรเพื่อเก็บการเชื่อมต่อ
 
@@ -82,7 +82,7 @@ Toggle:OnChanged(function(state)
 
                 if stoneCount == 0 and not hasTeleported then
                     -- วาบไปที่ตำแหน่ง -4539, 38, -227
-                    player.Character.HumanoidRootPart.CFrame = CFrame.new(-4445, 13, -222)
+                    player.Character.HumanoidRootPart.CFrame = CFrame.new(-4539, 38, -227)
                     hasTeleported = true -- ตั้งค่าตัวแปรว่าได้วาบไปแล้ว
                 elseif stoneCount > 0 then
                     hasTeleported = false -- ถ้ามี Stone ให้ตั้งค่าตัวแปรกลับ
