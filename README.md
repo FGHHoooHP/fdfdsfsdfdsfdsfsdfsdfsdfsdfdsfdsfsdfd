@@ -403,6 +403,25 @@ Toggle:OnChanged(function(state)
     if running then
         while running do -- ทำซ้ำเมื่อ Toggle เปิดใช้งาน
             -- เคลื่อนที่ไปยังตำแหน่งเริ่มต้น
+
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-3182, 34, 3234)
+
+            wait(5)
+
+            -- ฟังก์ชันซื้อสินค้า
+            local function buy(item, quantity)
+                local args = { [1] = item, [2] = quantity }
+                game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Shop"):FireServer(unpack(args))
+            end
+
+            -- ซื้อสินค้า
+            buy("Tea", 10)
+            buy("Water", 10)
+            buy("Bread", 10)
+
+            -- รอ 1 วินาที
+            wait(2.5)
+            
             game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-3838, 41, 1573)
 
             -- รอ 70 วินาที
