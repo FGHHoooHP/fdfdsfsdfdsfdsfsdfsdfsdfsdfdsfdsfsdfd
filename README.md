@@ -525,37 +525,52 @@ Tabs.groblins:AddButton({
                     {
                         Title = "Confirm",
                         Callback = function()
-                            local runService = game:GetService("RunService")
+                            local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
 
--- ฟังก์ชันเปลี่ยนทุกอย่างให้เป็นดินน้ำมัน
-local function makeEverythingClay()
-    for _, object in pairs(workspace:GetDescendants()) do
-        if object:IsA("BasePart") or object:IsA("MeshPart") then
-            object.Material = Enum.Material.SmoothPlastic
-            object.Color = Color3.fromRGB(255, 223, 191)
-            object.Reflectance = 0
-            object.Transparency = 0
-        elseif object:IsA("Decal") or object:IsA("Texture") then
-            object:Destroy()
-        elseif object:IsA("Humanoid") then
-            local character = object.Parent
-            for _, part in pairs(character:GetChildren()) do
-                if part:IsA("BasePart") or part:IsA("MeshPart") then
-                    part.Material = Enum.Material.SmoothPlastic
-                    part.Color = Color3.fromRGB(255, 223, 191)
-                    part.Reflectance = 0
-                    part.Transparency = 0
-                end
-            end
-        end
-    end
+-- Teleportation sequence
+local teleportLocations = {
+    CFrame.new(1229, 33, 5307),
+    CFrame.new(684, 33, 4986),
+    CFrame.new(220, 30, 5206),
+    CFrame.new(389, 29, 5606),
+    CFrame.new(892, 73, 5864),
+    CFrame.new(721, 73, 5838),
+    CFrame.new(1106, 81, 5662),
+    CFrame.new(1286, 80, 5832),
+    CFrame.new(1594, 73, 5725),
+    CFrame.new(1910, 34, 5799),
+    CFrame.new(2017, 72, 5244),
+    CFrame.new(1981, 25, 4914)
+}
+
+for _, location in ipairs(teleportLocations) do
+    character:SetPrimaryPartCFrame(location)
+    wait(0.5)  -- Wait for 2 seconds between teleports
 end
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
 
--- ทำการเรียกฟังก์ชัน makeEverythingClay ทุกเฟรม (0 วินาที)
-runService.Stepped:Connect(function()
-    makeEverythingClay()
-end)
+-- Teleportation sequence
+local teleportLocations = {
+    CFrame.new(1229, 33, 5307),
+    CFrame.new(684, 33, 4986),
+    CFrame.new(220, 30, 5206),
+    CFrame.new(389, 29, 5606),
+    CFrame.new(892, 73, 5864),
+    CFrame.new(721, 73, 5838),
+    CFrame.new(1106, 81, 5662),
+    CFrame.new(1286, 80, 5832),
+    CFrame.new(1594, 73, 5725),
+    CFrame.new(1910, 34, 5799),
+    CFrame.new(2017, 72, 5244),
+    CFrame.new(-2583, 36, 1775)
+}
 
+for _, location in ipairs(teleportLocations) do
+    character:SetPrimaryPartCFrame(location)
+    wait(0.5)  -- Wait for 2 seconds between teleports
+end
 
                         end
                     },
@@ -803,7 +818,7 @@ Toggle:OnChanged(function()
 
     -- เรียกฟังก์ชันอัปเดตค่า
     updateVaultValues()
-W
+
     -- หากต้องการให้ UI อัปเดตตลอดเวลา คุณสามารถใช้ Loop ได้
     while true do
         updateVaultValues()
