@@ -662,7 +662,7 @@ workspace.StreamingEnabled = true
 
 end
 
-                        end
+                        
                     },
                     {
                         Title = "Cancel",
@@ -787,7 +787,7 @@ Toggle:OnChanged(function()
     vibraniumLabel.Size = UDim2.new(0, 380, 0, 50) -- ปรับขนาดให้พอดีกับ Frame
     vibraniumLabel.Position = UDim2.new(0, 10, 0, 190)
     vibraniumLabel.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-    vibraniumLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    vibraniumLabel.TextColor3 = Color3.new(0.254902, 0.239216, 0.239216)
     vibraniumLabel.TextSize = 24
     vibraniumLabel.Text = "Vibranium: Loading..."
     vibraniumLabel.Parent = frame
@@ -803,7 +803,7 @@ Toggle:OnChanged(function()
 
     -- เรียกฟังก์ชันอัปเดตค่า
     updateVaultValues()
-
+W
     -- หากต้องการให้ UI อัปเดตตลอดเวลา คุณสามารถใช้ Loop ได้
     while true do
         updateVaultValues()
