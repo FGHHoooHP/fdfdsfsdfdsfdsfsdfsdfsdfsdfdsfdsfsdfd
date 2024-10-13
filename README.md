@@ -525,51 +525,141 @@ Tabs.groblins:AddButton({
                     {
                         Title = "Confirm",
                         Callback = function()
-                            local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
+                            local runService = game:GetService("RunService")
 
--- Teleportation sequence
-local teleportLocations = {
-    CFrame.new(1229, 33, 5307),
-    CFrame.new(684, 33, 4986),
-    CFrame.new(220, 30, 5206),
-    CFrame.new(389, 29, 5606),
-    CFrame.new(892, 73, 5864),
-    CFrame.new(721, 73, 5838),
-    CFrame.new(1106, 81, 5662),
-    CFrame.new(1286, 80, 5832),
-    CFrame.new(1594, 73, 5725),
-    CFrame.new(1910, 34, 5799),
-    CFrame.new(2017, 72, 5244),
-    CFrame.new(1981, 25, 4914)
-}
-
-for _, location in ipairs(teleportLocations) do
-    character:SetPrimaryPartCFrame(location)
-    wait(0.5)  -- Wait for 2 seconds between teleports
+-- ฟังก์ชันเปลี่ยนทุกอย่างให้เป็นดินน้ำมัน
+local function makeEverythingClay()
+    for _, object in pairs(workspace:GetDescendants()) do
+        if object:IsA("BasePart") or object:IsA("MeshPart") then
+            object.Material = Enum.Material.SmoothPlastic
+            object.Color = Color3.fromRGB(255, 223, 191)
+            object.Reflectance = 0
+            object.Transparency = 0
+        elseif object:IsA("Decal") or object:IsA("Texture") then
+            object:Destroy()
+        elseif object:IsA("Humanoid") then
+            local character = object.Parent
+            for _, part in pairs(character:GetChildren()) do
+                if part:IsA("BasePart") or part:IsA("MeshPart") then
+                    part.Material = Enum.Material.SmoothPlastic
+                    part.Color = Color3.fromRGB(255, 223, 191)
+                    part.Reflectance = 0
+                    part.Transparency = 0
+                end
+            end
+        end
+    end
 end
-local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
 
--- Teleportation sequence
-local teleportLocations = {
-    CFrame.new(1229, 33, 5307),
-    CFrame.new(684, 33, 4986),
-    CFrame.new(220, 30, 5206),
-    CFrame.new(389, 29, 5606),
-    CFrame.new(892, 73, 5864),
-    CFrame.new(721, 73, 5838),
-    CFrame.new(1106, 81, 5662),
-    CFrame.new(1286, 80, 5832),
-    CFrame.new(1594, 73, 5725),
-    CFrame.new(1910, 34, 5799),
-    CFrame.new(2017, 72, 5244),
-    CFrame.new(-2583, 36, 1775)
-}
+-- ทำการเรียกฟังก์ชัน makeEverythingClay ทุกเฟรม (0 วินาที)
+runService.Stepped:Connect(function()
+    makeEverythingClay()
+end)
 
-for _, location in ipairs(teleportLocations) do
-    character:SetPrimaryPartCFrame(location)
-    wait(0.5)  -- Wait for 2 seconds between teleports
+
+                        end
+                    },
+                    {
+                        Title = "Cancel",
+                        Callback = function()
+                             
+                        end
+                    }
+                }
+            })
+        end
+    })
+
+Tabs.groblins:AddButton({
+        Title = "FPS BOOTS",
+        Description = "",
+        Callback = function()
+            Window:Dialog({
+                Title = "Title",
+                Content = "This is a dialog",
+                Buttons = {
+                    {
+                        Title = "Confirm",
+                        Callback = function()
+                            -- ฟังก์ชันเปลี่ยนวัสดุและวัตถุให้เป็นดินน้ำมัน
+local function makeEverythingClay(object)
+    -- ตรวจสอบวัตถุที่เป็น BasePart (เช่น บล็อก, ชิ้นส่วนของโมเดล)
+    if object:IsA("BasePart") then
+        -- เปลี่ยนวัสดุเป็น 'SmoothPlastic' ให้เรียบเหมือนดินน้ำมัน
+        object.Material = Enum.Material.SmoothPlastic
+        
+        -- ตั้งค่าสีให้ดูเหมือนดินน้ำมัน (สามารถปรับแต่งได้)
+        object.Color = Color3.fromRGB(255, 223, 191) -- ตัวอย่างสีดินน้ำมัน
+        
+        -- ปรับลดการสะท้อนแสงและการโปร่งแสง
+        object.Reflectance = 0
+        object.Transparency = 0
+    
+    -- กรณีของ MeshPart (วัตถุที่มีโมเดล 3 มิติแบบ Mesh)
+    elseif object:IsA("MeshPart") then
+        -- เปลี่ยนวัสดุเป็น 'SmoothPlastic'
+        object.Material = Enum.Material.SmoothPlastic
+        
+        -- ตั้งค่าสีให้เหมือนดินน้ำมัน
+        object.Color = Color3.fromRGB(255, 223, 191) -- ตัวอย่างสีดินน้ำมัน
+        
+        -- ปรับลดการสะท้อนแสงและการโปร่งแสง
+        object.Reflectance = 0
+        object.Transparency = 0
+        
+    -- ลบ Decal หรือ Texture ที่ไม่จำเป็นเพื่อทำให้ดูเรียบง่ายขึ้น
+    elseif object:IsA("Decal") or object:IsA("Texture") then
+        object:Destroy()
+    
+    -- กรณีตัวละคร Humanoid
+    elseif object:IsA("Humanoid") then
+        -- ทำการปรับเปลี่ยนเสื้อผ้าหรือวัสดุของตัวละคร (สามารถเพิ่มได้ตามต้องการ)
+        local character = object.Parent
+        for _, part in pairs(character:GetChildren()) do
+            if part:IsA("BasePart") or part:IsA("MeshPart") then
+                -- เปลี่ยนวัสดุและสีของชิ้นส่วนตัวละครทั้งหมด
+                part.Material = Enum.Material.SmoothPlastic
+                part.Color = Color3.fromRGB(255, 223, 191)
+                part.Reflectance = 0
+                part.Transparency = 0
+            end
+        end
+    end
+end
+
+-- เรียกฟังก์ชัน makeEverythingClay กับทุกวัตถุใน workspace
+for _, object in pairs(workspace:GetDescendants()) do
+    makeEverythingClay(object)
+end
+
+-- ปิดเอฟเฟกต์แสงและเงาเพื่อเพิ่ม FPS และทำให้ภาพดูลื่นขึ้น
+local lighting = game:GetService("Lighting")
+lighting.GlobalShadows = false  -- ปิดเงาทั่วโลก
+lighting.EnvironmentDiffuseScale = 0  -- ปิดการกระจายแสง
+lighting.EnvironmentSpecularScale = 0  -- ปิดการสะท้อนแสง
+
+-- ปิดเอฟเฟกต์ภาพอื่น ๆ เช่น Bloom และ Blur
+for _, effect in pairs(lighting:GetChildren()) do
+    if effect:IsA("BloomEffect") or effect:IsA("BlurEffect") or effect:IsA("ColorCorrectionEffect") then
+        effect.Enabled = false
+    end
+end
+
+-- ปิดการสะท้อนน้ำและคลื่นใน Terrain
+local terrain = workspace:FindFirstChildOfClass("Terrain")
+if terrain then
+    terrain.WaterWaveSize = 0
+    terrain.WaterWaveSpeed = 0
+    terrain.WaterReflectance = 0
+    terrain.WaterTransparency = 1
+end
+
+-- ลดระดับคุณภาพของภาพเพื่อเพิ่ม FPS
+settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+
+-- ลดการทำงานของฟิสิกส์เพื่อเพิ่มประสิทธิภาพ
+workspace.StreamingEnabled = true
+
 end
 
                         end
@@ -584,6 +674,7 @@ end
             })
         end
     })
+
 
 local Toggle = Tabs.AirDrop:AddToggle("MyToggle", {Title = "Auto E", Default = false })
 
@@ -719,3 +810,4 @@ Toggle:OnChanged(function()
         wait(5) -- อัปเดตทุกๆ 5 วินาที
     end
 end)
+
