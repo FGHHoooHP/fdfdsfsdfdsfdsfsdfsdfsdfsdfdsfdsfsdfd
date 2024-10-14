@@ -453,7 +453,7 @@ Toggle:OnChanged(function(state)
         running = true
         while running do
             -- วาบไปที่พิกัดที่ระบุ
-            character:SetPrimaryPartCFrame(CFrame.new(-2583, 36, 1775))
+            character:SetPrimaryPartCFrame(CFrame.new(857, 35, 3338))
 
             -- รอ 0 วินาทีก่อนทำซ้ำ
             task.wait(0)
@@ -515,7 +515,7 @@ Toggle:OnChanged(function(value)
 end)
 
 Tabs.groblins:AddButton({
-        Title = "groblins v3 Load map",
+        Title = "groblins V3 Load map",
         Description = "",
         Callback = function()
             Window:Dialog({
@@ -585,6 +585,35 @@ end
         end
     })
 
+local Toggle = Tabs.groblins:AddToggle("MyToggle", {Title = "groblins V4", Default = false })
+
+Toggle:OnChanged(function(state)
+    local isActive = state -- สถานะของ Toggle
+
+    while isActive do
+        local args1 = {
+            [1] = "Sell",
+            [2] = "Goblin_Skin",
+            [3] = "120"
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Economy"):FireServer(unpack(args1))
+
+        local args2 = {
+            [1] = "Sell",
+            [2] = "Goblin_Meat",
+            [3] = "120"
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Economy"):FireServer(unpack(args2))
+
+        wait(5) -- รอ 5 วินาทีก่อนจะรันอีกครั้ง
+
+        if not Toggle.Value then -- ตรวจสอบสถานะของ Toggle หากถูกปิด
+            isActive = false -- หยุดลูป
+        end
+    end
+end)
+
+
 Tabs.groblins:AddButton({
         Title = "FPS BOOTS",
         Description = "",
@@ -597,6 +626,7 @@ Tabs.groblins:AddButton({
                         Title = "Confirm",
                         Callback = function()
                             -- ฟังก์ชันเปลี่ยนวัสดุและวัตถุให้เป็นดินน้ำมัน
+
 local function makeEverythingClay(object)
     -- ตรวจสอบวัตถุที่เป็น BasePart (เช่น บล็อก, ชิ้นส่วนของโมเดล)
     if object:IsA("BasePart") then
@@ -641,6 +671,28 @@ local function makeEverythingClay(object)
         end
     end
 end
+
+local Toggle = Tabs.groblins:AddToggle("MyToggle", {Title = "groblins V999", Default = false })
+
+local runLoop = false -- ตัวแปรสำหรับควบคุมการรัน loop
+
+Toggle:OnChanged(function()
+    runLoop = Toggle.Value -- ตั้งค่า runLoop ตามสถานะของ Toggle
+    
+    -- เริ่มฟังก์ชันที่ทำงานเมื่อ Toggle เปิด
+    local player = game.Players.LocalPlayer
+    local healthGui = player:WaitForChild("PlayerGui"):WaitForChild("HealthDisplay") --หรือชื่อที่คุณต้องการปิด
+
+    -- ใช้ coroutine เพื่อรัน loop อย่างต่อเนื่องเมื่อ Toggle ถูกเปิด
+    coroutine.wrap(function()
+        while runLoop do
+            healthGui.Enabled = false
+            wait(0) -- ทำให้การทำงานรันทุกๆ 0 วิ
+        end
+    end)()
+end)
+
+
 
 -- เรียกฟังก์ชัน makeEverythingClay กับทุกวัตถุใน workspace
 for _, object in pairs(workspace:GetDescendants()) do
