@@ -672,28 +672,6 @@ local function makeEverythingClay(object)
     end
 end
 
-local Toggle = Tabs.groblins:AddToggle("MyToggle", {Title = "groblins V999", Default = false })
-
-local runLoop = false -- ตัวแปรสำหรับควบคุมการรัน loop
-
-Toggle:OnChanged(function()
-    runLoop = Toggle.Value -- ตั้งค่า runLoop ตามสถานะของ Toggle
-    
-    -- เริ่มฟังก์ชันที่ทำงานเมื่อ Toggle เปิด
-    local player = game.Players.LocalPlayer
-    local healthGui = player:WaitForChild("PlayerGui"):WaitForChild("HealthDisplay") --หรือชื่อที่คุณต้องการปิด
-
-    -- ใช้ coroutine เพื่อรัน loop อย่างต่อเนื่องเมื่อ Toggle ถูกเปิด
-    coroutine.wrap(function()
-        while runLoop do
-            healthGui.Enabled = false
-            wait(0) -- ทำให้การทำงานรันทุกๆ 0 วิ
-        end
-    end)()
-end)
-
-
-
 -- เรียกฟังก์ชัน makeEverythingClay กับทุกวัตถุใน workspace
 for _, object in pairs(workspace:GetDescendants()) do
     makeEverythingClay(object)
