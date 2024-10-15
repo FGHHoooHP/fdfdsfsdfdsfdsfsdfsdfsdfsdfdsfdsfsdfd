@@ -8,7 +8,7 @@ local Window = Fluent:CreateWindow({
     TabWidth = 160,
     Size = UDim2.fromOffset(580, 460),
     Acrylic = true, -- The blur may be detectable, setting this to false disables blur entirely
-    Theme = "Dark",
+    Theme = "Anethyst",
     MinimizeKey = Enum.KeyCode.LeftControl -- Used when theres no MinimizeKeybind
 })
 
@@ -406,24 +406,6 @@ Toggle:OnChanged(function(state)
     if running then
         while running do -- ทำซ้ำเมื่อ Toggle เปิดใช้งาน
             -- เคลื่อนที่ไปยังตำแหน่งเริ่มต้น
-
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-3182, 34, 3234)
-
-            wait(5)
-
-            -- ฟังก์ชันซื้อสินค้า
-            local function buy(item, quantity)
-                local args = { [1] = item, [2] = quantity }
-                game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Shop"):FireServer(unpack(args))
-            end
-
-            -- ซื้อสินค้า
-            buy("Tea", 10)
-            buy("Water", 10)
-            buy("Bread", 10)
-
-            -- รอ 1 วินาที
-            wait(2.5)
             
             game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-3838, 41, 1573)
 
@@ -531,17 +513,8 @@ local character = player.Character or player.CharacterAdded:Wait()
 -- Teleportation sequence
 local teleportLocations = {
     CFrame.new(1229, 33, 5307),
-    CFrame.new(684, 33, 4986),
-    CFrame.new(220, 30, 5206),
-    CFrame.new(389, 29, 5606),
-    CFrame.new(892, 73, 5864),
-    CFrame.new(721, 73, 5838),
-    CFrame.new(1106, 81, 5662),
-    CFrame.new(1286, 80, 5832),
-    CFrame.new(1594, 73, 5725),
-    CFrame.new(1910, 34, 5799),
-    CFrame.new(2017, 72, 5244),
-    CFrame.new(1981, 25, 4914)
+    CFrame.new(684, 33, 4986)
+
 }
 
 for _, location in ipairs(teleportLocations) do
@@ -554,17 +527,8 @@ local character = player.Character or player.CharacterAdded:Wait()
 -- Teleportation sequence
 local teleportLocations = {
     CFrame.new(1229, 33, 5307),
-    CFrame.new(684, 33, 4986),
-    CFrame.new(220, 30, 5206),
-    CFrame.new(389, 29, 5606),
-    CFrame.new(892, 73, 5864),
-    CFrame.new(721, 73, 5838),
-    CFrame.new(1106, 81, 5662),
-    CFrame.new(1286, 80, 5832),
-    CFrame.new(1594, 73, 5725),
-    CFrame.new(1910, 34, 5799),
-    CFrame.new(2017, 72, 5244),
-    CFrame.new(-2583, 36, 1775)
+    CFrame.new(684, 33, 4986)
+
 }
 
 for _, location in ipairs(teleportLocations) do
