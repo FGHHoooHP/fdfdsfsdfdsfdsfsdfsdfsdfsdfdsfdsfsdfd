@@ -430,7 +430,7 @@ local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 -- Define the positions
 local positions = {
     Vector3.new(858, 35, 3337),
-    Vector3.new(5853, 35, 3335),
+    Vector3.new(848, 35, 3335),
     Vector3.new(860, 35, 3336)
 }
 
@@ -446,7 +446,7 @@ Toggle:OnChanged(function(value)
             while isRunning do
                 for _, position in ipairs(positions) do
                     humanoidRootPart.CFrame = CFrame.new(position)
-                    wait(0.2) -- Delay between each teleport
+                    wait(0) -- Delay between each teleport
                 end
             end
         end)()
