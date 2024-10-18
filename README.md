@@ -421,28 +421,35 @@ Toggle:OnChanged(function(state)
     end
 end)
 
-
 local Toggle = Tabs.groblins:AddToggle("MyToggle", {Title = "groblins V1", Default = false })
 
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+-- Define the positions
+local positions = {
+    Vector3.new(858, 35, 3337),
+    Vector3.new(5853, 35, 3335),
+    Vector3.new(860, 35, 3336)
+}
+
 -- Variable to control the loop
-local running = false
+local isRunning = false
 
-Toggle:OnChanged(function(state)
-    local player = game.Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
+Toggle:OnChanged(function(value)
+    isRunning = value  -- Update the isRunning status based on toggle
 
-    if state then
-        running = true
-        while running do
-            -- วาบไปที่พิกัดที่ระบุ
-            character:SetPrimaryPartCFrame(CFrame.new(857, 35, 3338))
-
-            -- รอ 0 วินาทีก่อนทำซ้ำ
-            task.wait(0)
-        end
-    else
-        -- Stop the loop when the toggle is off
-        running = false
+    if isRunning then
+        -- Start the teleport loop in a separate coroutine
+        coroutine.wrap(function()
+            while isRunning do
+                for _, position in ipairs(positions) do
+                    humanoidRootPart.CFrame = CFrame.new(position)
+                    wait(0.2) -- Delay between each teleport
+                end
+            end
+        end)()
     end
 end)
 
@@ -573,6 +580,53 @@ Toggle:OnChanged(function(state)
 
         if not Toggle.Value then -- ตรวจสอบสถานะของ Toggle หากถูกปิด
             isActive = false -- หยุดลูป
+        end
+    end
+end)
+
+local Toggle = Tabs.groblins:AddToggle("MyToggle", {Title = "groblins V999", Default = false})
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+local healthChangedConnection
+
+-- ฟังก์ชันกระโดด
+local function jumpWithoutDamage()
+    -- ปิดการลดเลือด
+    if not healthChangedConnection then
+        healthChangedConnection = humanoid.HealthChanged:Connect(function(health)
+            if health < humanoid.MaxHealth then
+                humanoid.Health = humanoid.MaxHealth -- รีเซ็ตเลือด
+            end
+        end)
+    end
+
+    -- กระโดด
+    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+
+    -- ความสูงที่ต้องการ
+    local jumpHeight = 100 -- สามารถปรับเปลี่ยนได้
+
+    -- เพิ่มความสูง
+    character:SetPrimaryPartCFrame(character.PrimaryPart.CFrame + Vector3.new(0, jumpHeight, 0))
+end
+
+-- เชื่อมต่อฟังก์ชันกับ Toggle
+Toggle:OnChanged(function(isToggled)
+    if isToggled then
+        -- เรียกใช้ฟังก์ชันเมื่อ Toggle เปิด
+        game:GetService("UserInputService").InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.Space then
+                jumpWithoutDamage()
+            end
+        end)
+    else
+        -- เมื่อ Toggle ปิด ให้ยกเลิกการเชื่อมต่อ HealthChanged
+        if healthChangedConnection then
+            healthChangedConnection:Disconnect()
+            healthChangedConnection = nil
         end
     end
 end)
