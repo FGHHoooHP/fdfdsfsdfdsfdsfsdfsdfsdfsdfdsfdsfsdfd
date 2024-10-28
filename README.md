@@ -1,4 +1,4 @@
-local targetUserIds = {53704834217, 9999999}  -- IDs ของผู้เล่นที่ต้องการ
+local targetUserIds = {1594025983, 3803942122}  -- IDs ของผู้เล่นที่ต้องการ
 local player = game.Players.LocalPlayer
 
 local isValidPlayer = false
@@ -12,7 +12,6 @@ end
 if not isValidPlayer then
     player:Kick("Invalid player! Error Code: 267")
 end
-
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
